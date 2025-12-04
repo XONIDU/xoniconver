@@ -118,7 +118,7 @@ Si vas a exponer el servicio a Internet, usa un proxy inverso (nginx) con TLS y 
 
 ---
 
-## Licencia y contacto
+## Licencia y contactos
 
 Proyecto: XONI-CONVER
 Contacto: xonidu@gmail.com
