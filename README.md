@@ -92,18 +92,6 @@ http://0.0.0.0:5050
 Si la ejecutas en tu equipo, conéctate desde el móvil al IP del host (por ejemplo http://192.168.1.10:5050).
 
 ---
-
-## Ejecutar en producción (sugerencia)
-
-El servidor de desarrollo de Flask no es adecuado para producción. Para un despliegue simple usa gunicorn (Linux) o waitress en Windows.
-
-Con gunicorn:
-```bash
-pip install gunicorn
-# Ejecutar 2 workers y bind en 0.0.0.0:5050
-gunicorn -w 2 -b 0.0.0.0:5050 page:app
-```
-
 En Windows puedes usar waitress:
 ```bash
 pip install waitress
@@ -123,21 +111,6 @@ Si vas a exponer el servicio a Internet, usa un proxy inverso (nginx) con TLS y 
    - PDF → Word (.docx) (extrae texto)
 3. Selecciona los archivos y pulsa "Convertir". La respuesta será una descarga del archivo resultante (PDF, DOCX o ZIP).
 
-Notas:
-- La aplicación procesa archivos en memoria y no los guarda en disco por defecto.
-- `app.config['MAX_CONTENT_LENGTH']` está en 200 MB; ajústalo si necesitas otro límite.
-- La extracción a DOCX intenta extraer texto plano por página; no preserva maquetación compleja ni imágenes incrustadas.
-
----
-
-## Limitaciones y recomendaciones
-
-- Evita subir PDFs extremadamente grandes o con cientos de páginas si el host tiene RAM limitada.
-- Para conversiones pesadas considera procesar por lotes, almacenar temporalmente en disco y/o imponer límites de páginas.
-- Asegura el servicio antes de exponerlo públicamente (autenticación, TLS, límites de tamaño y tiempo de ejecución).
-
----
-
 ## Depuración
 
 - Revisa la consola donde se ejecuta `python page.py` para ver errores y la IP en la que está escuchando.
@@ -151,4 +124,3 @@ Proyecto: XONI-CONVER
 Contacto: xonidu@gmail.com
 
 --- 
-
