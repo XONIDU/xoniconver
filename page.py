@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response, render_template_string, flash, redirect, url_for
 from PIL import Image
-from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2 import PdfReader, PdfWriter, PdfMerger
 from docx import Document
 import io
 import zipfile
@@ -22,8 +22,7 @@ ALLOWED_PDF_EXTENSIONS = {"pdf"}
 ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_PDF_EXTENSIONS)
 
 # INTERFAZ ELEGANTE - RESPONSIVE PARA PC Y MÓVIL
-HTML_PAGE = """
-<!DOCTYPE html>
+HTML_PAGE = '''<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -78,7 +77,6 @@ HTML_PAGE = """
             border: 1px solid var(--border);
         }
 
-        /* HEADER RESPONSIVE */
         .header {
             background: linear-gradient(to right, var(--primary-dark), var(--primary));
             color: white;
@@ -132,7 +130,6 @@ HTML_PAGE = """
             }
         }
 
-        /* MAIN CONTENT RESPONSIVE */
         .content {
             padding: 25px;
             display: flex;
@@ -150,7 +147,6 @@ HTML_PAGE = """
             }
         }
 
-        /* FORM CONTAINER */
         .form-container {
             width: 100%;
         }
@@ -178,7 +174,6 @@ HTML_PAGE = """
             }
         }
 
-        /* FORM ELEMENTS */
         .form-group {
             margin-bottom: 20px;
         }
@@ -222,7 +217,6 @@ HTML_PAGE = """
             box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
         }
 
-        /* FILE UPLOAD RESPONSIVE */
         .file-upload {
             border: 3px dashed var(--border);
             border-radius: var(--radius);
@@ -292,19 +286,16 @@ HTML_PAGE = """
             max-width: 250px;
         }
 
-        @media (hover: hover) {
-            .browse-btn:hover {
-                background: var(--primary-dark);
-                transform: translateY(-2px);
-                box-shadow: var(--shadow-hover);
-            }
+        .browse-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
         }
 
         .browse-btn:active {
             transform: translateY(0);
         }
 
-        /* FILE LIST */
         .file-list {
             margin-top: 20px;
             max-height: 250px;
@@ -390,7 +381,6 @@ HTML_PAGE = """
             background: rgba(229, 62, 62, 0.1);
         }
 
-        /* CONVERT BUTTON RESPONSIVE */
         .convert-btn {
             width: 100%;
             background: linear-gradient(to right, var(--primary-dark), var(--primary));
@@ -410,11 +400,9 @@ HTML_PAGE = """
             touch-action: manipulation;
         }
 
-        @media (min-width: 768px) {
-            .convert-btn:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 25px rgba(26, 54, 93, 0.2);
-            }
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 54, 93, 0.2);
         }
 
         .convert-btn:disabled {
@@ -427,7 +415,6 @@ HTML_PAGE = """
             transform: translateY(0);
         }
 
-        /* INFO PANEL */
         .info-panel {
             padding: 25px;
             background: var(--light);
@@ -480,7 +467,6 @@ HTML_PAGE = """
             line-height: 1.5;
         }
 
-        /* FILE COUNTER */
         .file-counter {
             text-align: center;
             margin-top: 15px;
@@ -492,7 +478,6 @@ HTML_PAGE = """
             border: 1px solid var(--border);
         }
 
-        /* MESSAGES RESPONSIVE */
         .messages {
             position: fixed;
             top: 15px;
@@ -576,7 +561,6 @@ HTML_PAGE = """
             }
         }
 
-        /* FOOTER */
         .footer {
             text-align: center;
             padding: 25px 20px;
@@ -590,7 +574,6 @@ HTML_PAGE = """
             margin-bottom: 5px;
         }
 
-        /* LOADING OVERLAY */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -633,7 +616,6 @@ HTML_PAGE = """
             100% { transform: rotate(360deg); }
         }
 
-        /* UTILITIES */
         .hidden {
             display: none !important;
         }
@@ -642,12 +624,11 @@ HTML_PAGE = """
             text-align: center;
         }
 
-        /* IMPROVE TOUCH TARGETS FOR MOBILE */
         @media (max-width: 767px) {
             button, 
             .form-select,
             .file-item {
-                min-height: 48px; /* Minimum touch target size */
+                min-height: 48px;
             }
             
             .file-remove {
@@ -660,14 +641,12 @@ HTML_PAGE = """
             }
         }
 
-        /* HIDE FILE INPUT */
         #fileInput {
             display: none;
         }
     </style>
 </head>
 <body>
-    <!-- LOADING OVERLAY -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="text-center">
             <div class="loading-spinner"></div>
@@ -675,27 +654,22 @@ HTML_PAGE = """
         </div>
     </div>
 
-    <!-- MESSAGES -->
     <div class="messages" id="messagesContainer"></div>
 
     <div class="container">
-        <!-- HEADER -->
         <header class="header">
             <div class="header-icon">🔄</div>
             <h1>XONI-CONVER</h1>
             <p>Conversor universal para PC y móvil. Convierte imágenes a PDF, une múltiples PDFs y extrae texto de PDF a Word.</p>
         </header>
 
-        <!-- MAIN CONTENT -->
         <div class="content">
-            <!-- FORM CONTAINER -->
             <div class="form-container">
                 <h2 class="form-title">
                     📁 Conversor de Archivos
                 </h2>
 
                 <form method="POST" enctype="multipart/form-data" id="converterForm">
-                    <!-- Conversion Type -->
                     <div class="form-group">
                         <label class="form-label">Tipo de Conversión</label>
                         <select name="conversion" id="conversion" class="form-select" required>
@@ -705,7 +679,6 @@ HTML_PAGE = """
                         </select>
                     </div>
 
-                    <!-- File Upload -->
                     <div class="form-group">
                         <label class="form-label">Archivos a Convertir</label>
                         <div class="file-upload" id="fileUploadArea">
@@ -721,20 +694,17 @@ HTML_PAGE = """
                                    accept=".pdf,image/*">
                         </div>
 
-                        <!-- File List -->
                         <div class="file-list" id="fileList">
                             <div class="file-item" style="justify-content: center; color: var(--text-light);">
                                 No hay archivos seleccionados
                             </div>
                         </div>
 
-                        <!-- File Counter -->
                         <div class="file-counter" id="fileCounter">
                             0 archivos | 0 KB
                         </div>
                     </div>
 
-                    <!-- Convert Button -->
                     <button type="submit" class="convert-btn" id="convertButton" disabled>
                         <span>🔄</span>
                         Convertir Archivos
@@ -742,7 +712,6 @@ HTML_PAGE = """
                 </form>
             </div>
 
-            <!-- INFO PANEL -->
             <div class="info-panel">
                 <h3 class="info-title">
                     ℹ️ Información
@@ -773,18 +742,15 @@ HTML_PAGE = """
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="footer">
-            <p>XONI-CONVER v3.0 • Conversor Universal • by XONIDU</p>
+            <p>XONI-CONVER v3.2 • Conversor Universal • by XONIDU</p>
             <p style="margin-top: 5px; font-size: 0.8rem; opacity: 0.7;">
                 Procesa archivos de forma segura y eficiente
             </p>
         </footer>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
-        // DOM Elements
         const fileInput = document.getElementById('fileInput');
         const fileUploadArea = document.getElementById('fileUploadArea');
         const fileList = document.getElementById('fileList');
@@ -795,25 +761,18 @@ HTML_PAGE = """
         const messagesContainer = document.getElementById('messagesContainer');
         const convertButton = document.getElementById('convertButton');
 
-        // State
         let files = [];
         const MAX_FILES = 50;
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             checkForMessages();
         });
 
-        // Setup event listeners
         function setupEventListeners() {
-            // File input
             fileInput.addEventListener('change', handleFileSelect);
-            
-            // Browse button
             browseButton.addEventListener('click', () => fileInput.click());
             
-            // Drag and drop
             fileUploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 fileUploadArea.classList.add('dragover');
@@ -833,29 +792,17 @@ HTML_PAGE = """
                 }
             });
             
-            // Form submission
             converterForm.addEventListener('submit', handleFormSubmit);
-            
-            // Improve touch experience
-            if ('ontouchstart' in window) {
-                // Add touch-specific improvements
-                document.querySelectorAll('button, .file-item').forEach(el => {
-                    el.style.cursor = 'pointer';
-                });
-            }
         }
 
-        // Handle file selection
         function handleFileSelect(event) {
             const newFiles = Array.from(event.target.files);
             
-            // Check file limit
             if (files.length + newFiles.length > MAX_FILES) {
                 showMessage(`Máximo ${MAX_FILES} archivos permitidos`, 'error');
                 return;
             }
             
-            // Add unique files
             newFiles.forEach(file => {
                 if (!isFileDuplicate(file)) {
                     files.push(file);
@@ -865,7 +812,6 @@ HTML_PAGE = """
             updateFileList();
         }
 
-        // Check for duplicate files
         function isFileDuplicate(newFile) {
             return files.some(existingFile => 
                 existingFile.name === newFile.name && 
@@ -873,7 +819,6 @@ HTML_PAGE = """
             );
         }
 
-        // Update file list display
         function updateFileList() {
             fileList.innerHTML = '';
             
@@ -888,13 +833,11 @@ HTML_PAGE = """
                 return;
             }
             
-            // Add files to list
             files.forEach((file, index) => {
                 const fileElement = createFileElement(file, index);
                 fileList.appendChild(fileElement);
             });
             
-            // Update counter
             const totalSize = formatFileSize(
                 files.reduce((sum, file) => sum + file.size, 0)
             );
@@ -902,7 +845,6 @@ HTML_PAGE = """
             convertButton.disabled = false;
         }
 
-        // Create file element
         function createFileElement(file, index) {
             const div = document.createElement('div');
             div.className = 'file-item';
@@ -919,7 +861,6 @@ HTML_PAGE = """
                 </button>
             `;
             
-            // Add remove event
             div.querySelector('.file-remove').addEventListener('click', (e) => {
                 e.stopPropagation();
                 removeFile(index);
@@ -928,7 +869,6 @@ HTML_PAGE = """
             return div;
         }
 
-        // Format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -937,18 +877,15 @@ HTML_PAGE = """
             return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         }
 
-        // Remove file
         function removeFile(index) {
             files.splice(index, 1);
             updateFileList();
             
-            // Update file input
             const dataTransfer = new DataTransfer();
             files.forEach(file => dataTransfer.items.add(file));
             fileInput.files = dataTransfer.files;
         }
 
-        // Handle form submission
         async function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -957,10 +894,8 @@ HTML_PAGE = """
                 return;
             }
             
-            // Show loading
             loadingOverlay.classList.add('active');
             
-            // Create FormData
             const formData = new FormData(converterForm);
             files.forEach(file => formData.append('files', file));
             
@@ -975,13 +910,11 @@ HTML_PAGE = """
                     const contentDisposition = response.headers.get('content-disposition');
                     
                     if (contentType && contentDisposition) {
-                        // Download file
                         const blob = await response.blob();
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
                         
-                        // Get filename
                         const filenameMatch = contentDisposition.match(/filename="(.+)"/);
                         a.download = filenameMatch ? filenameMatch[1] : 'converted_file';
                         
@@ -992,7 +925,6 @@ HTML_PAGE = """
                         
                         showMessage('Conversión completada ✓', 'success');
                         
-                        // Reset
                         files = [];
                         updateFileList();
                         fileInput.value = '';
@@ -1012,7 +944,6 @@ HTML_PAGE = """
             }
         }
 
-        // Show message
         function showMessage(text, type = 'error') {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
@@ -1027,7 +958,6 @@ HTML_PAGE = """
             
             messagesContainer.appendChild(messageDiv);
             
-            // Auto remove after 5 seconds
             setTimeout(() => {
                 if (messageDiv.parentElement) {
                     messageDiv.remove();
@@ -1035,9 +965,7 @@ HTML_PAGE = """
             }, 5000);
         }
 
-        // Check for server messages
         function checkForMessages() {
-            // Check for any existing error messages
             const errorElements = document.querySelectorAll('.error');
             errorElements.forEach(el => {
                 if (el.textContent.trim()) {
@@ -1046,12 +974,10 @@ HTML_PAGE = """
             });
         }
 
-        // Make functions global
         window.showMessage = showMessage;
     </script>
 </body>
-</html>
-"""
+</html>'''
 
 def allowed_filename(filename: str) -> bool:
     if not filename or '.' not in filename:
@@ -1068,30 +994,28 @@ def is_pdf_filename(filename: str) -> bool:
 def images_to_pdf(files):
     """Convert images to PDF"""
     pil_images = []
-    temp_files = []
+    temp_dirs = []
     
     try:
         for f in files:
-            if f.filename == "" or not is_image_filename(f.filename):
+            if not is_image_filename(f.filename):
                 continue
             
-            # Save to temp file
             temp_dir = tempfile.mkdtemp()
             temp_path = os.path.join(temp_dir, secure_filename(f.filename))
             f.save(temp_path)
-            temp_files.append(temp_dir)
+            temp_dirs.append(temp_dir)
             
-            # Open image
             try:
                 img = Image.open(temp_path).convert("RGB")
                 pil_images.append(img)
-            except:
+            except Exception as e:
+                print(f"Error procesando imagen {f.filename}: {e}")
                 continue
         
         if not pil_images:
             raise ValueError("No hay imágenes válidas para convertir.")
         
-        # Create PDF
         output = io.BytesIO()
         if len(pil_images) == 1:
             pil_images[0].save(output, format="PDF")
@@ -1100,125 +1024,162 @@ def images_to_pdf(files):
             first.save(output, format="PDF", save_all=True, append_images=rest)
         
         output.seek(0)
-        return ("single", ("converted.pdf", output.read(), "application/pdf"))
+        return ("single", ("imagenes_a_pdf.pdf", output.read(), "application/pdf"))
         
     finally:
-        # Cleanup
-        for temp_dir in temp_files:
+        for temp_dir in temp_dirs:
             try:
                 shutil.rmtree(temp_dir)
             except:
                 pass
 
-def pdfs_merge(files):
-    """Merge PDF files"""
-    writer = PdfWriter()
-    temp_files = []
+def pdfs_merge_v1(files):
+    """Merge PDFs usando PdfMerger - Método 1"""
+    merger = PdfMerger()
+    temp_dirs = []
     
     try:
-        for f in files:
-            if f.filename == "" or not is_pdf_filename(f.filename):
+        for idx, f in enumerate(files):
+            if not is_pdf_filename(f.filename):
                 continue
             
-            # Save to temp file
             temp_dir = tempfile.mkdtemp()
             temp_path = os.path.join(temp_dir, secure_filename(f.filename))
             f.save(temp_path)
-            temp_files.append(temp_dir)
+            temp_dirs.append(temp_dir)
             
-            # Read PDF
             try:
-                reader = PdfReader(temp_path)
+                # Usar PdfMerger que es más robusto para unir
+                merger.append(temp_path)
+                print(f"✅ PDF {idx+1} agregado: {f.filename}")
+            except Exception as e:
+                print(f"❌ Error con PdfMerger para {f.filename}: {e}")
+                raise
+        
+        if len(merger.pages) == 0:
+            raise ValueError("No se pudieron procesar archivos PDF válidos.")
+        
+        print(f"📊 Total de páginas: {len(merger.pages)}")
+        
+        output = io.BytesIO()
+        merger.write(output)
+        merger.close()
+        output.seek(0)
+        
+        return ("single", ("pdfs_combinados.pdf", output.read(), "application/pdf"))
+        
+    finally:
+        for temp_dir in temp_dirs:
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except:
+                pass
+
+def pdfs_merge_v2(files):
+    """Merge PDFs usando PdfWriter - Método 2 (alternativo)"""
+    writer = PdfWriter()
+    processed_pages = 0
+    
+    try:
+        for idx, f in enumerate(files):
+            if not is_pdf_filename(f.filename):
+                continue
+            
+            # Guardar en memoria directamente
+            f.seek(0)
+            pdf_bytes = f.read()
+            pdf_stream = io.BytesIO(pdf_bytes)
+            
+            try:
+                reader = PdfReader(pdf_stream)
+                
+                # Verificar páginas
+                if len(reader.pages) == 0:
+                    print(f"⚠️ PDF vacío: {f.filename}")
+                    continue
+                
+                # Agregar TODAS las páginas
                 for page in reader.pages:
                     writer.add_page(page)
-            except:
+                    processed_pages += 1
+                
+                print(f"✅ PDF {idx+1}: {f.filename} ({len(reader.pages)} páginas)")
+                
+            except Exception as e:
+                print(f"❌ Error leyendo PDF {f.filename}: {e}")
                 continue
         
-        if len(writer.pages) == 0:
-            raise ValueError("No hay PDFs válidos para unir.")
+        if processed_pages == 0:
+            raise ValueError("No se pudieron procesar archivos PDF válidos.")
         
-        # Write merged PDF
+        print(f"📊 Total final de páginas: {processed_pages}")
+        
         output = io.BytesIO()
         writer.write(output)
         output.seek(0)
         
-        return ("single", ("merged.pdf", output.read(), "application/pdf"))
+        return ("single", ("pdfs_unidos.pdf", output.read(), "application/pdf"))
         
     finally:
-        # Cleanup
-        for temp_dir in temp_files:
-            try:
-                shutil.rmtree(temp_dir)
-            except:
-                pass
+        try:
+            writer.close()
+        except:
+            pass
 
 def pdf_to_docx(files):
     """Convert PDF(s) to single DOCX file"""
     doc = Document()
-    temp_files = []
+    temp_dirs = []
     
     try:
-        # Add a title
         doc.add_heading('Documento Convertido de PDF', 0)
-        
-        any_text_extracted = False
+        text_extracted = False
         
         for idx, f in enumerate(files):
-            if f.filename == "" or not is_pdf_filename(f.filename):
+            if not is_pdf_filename(f.filename):
                 continue
             
-            # Save to temp file
             temp_dir = tempfile.mkdtemp()
             temp_path = os.path.join(temp_dir, secure_filename(f.filename))
             f.save(temp_path)
-            temp_files.append(temp_dir)
+            temp_dirs.append(temp_dir)
             
             try:
-                # Read PDF
                 reader = PdfReader(temp_path)
                 
-                # Add PDF filename as heading
                 if len(files) > 1:
                     doc.add_heading(f"PDF: {f.filename}", level=2)
                 
-                # Extract text from each page
                 for page_num, page in enumerate(reader.pages, 1):
                     try:
                         text = page.extract_text()
                         if text and text.strip():
-                            any_text_extracted = True
+                            text_extracted = True
                             
-                            # Add page number if multiple pages
                             if len(reader.pages) > 1:
                                 doc.add_heading(f"Página {page_num}", level=3)
                             
-                            # Add the text
                             doc.add_paragraph(text)
                             
-                            # Add page break between pages (except last page)
                             if page_num < len(reader.pages):
                                 doc.add_page_break()
                     except:
                         continue
                 
-                # Add separator between PDFs if multiple PDFs
                 if idx < len(files) - 1:
                     doc.add_heading("─" * 50, level=2)
                     
             except Exception as e:
-                error_msg = f"Error procesando {f.filename}: {str(e)}"
-                doc.add_paragraph(error_msg)
+                doc.add_paragraph(f"Error procesando {f.filename}: {str(e)}")
                 continue
         
-        if not any_text_extracted:
+        if not text_extracted:
             doc.add_paragraph("No se pudo extraer texto de los PDFs.")
         
-        # Save DOCX to buffer
         doc_buffer = io.BytesIO()
         doc.save(doc_buffer)
         doc_buffer.seek(0)
         
-        # Generate filename
         if len(files) == 1:
             base_name = files[0].filename.rsplit(".", 1)[0]
             filename = f"{base_name}_convertido.docx"
@@ -1230,8 +1191,7 @@ def pdf_to_docx(files):
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
         
     finally:
-        # Cleanup
-        for temp_dir in temp_files:
+        for temp_dir in temp_dirs:
             try:
                 shutil.rmtree(temp_dir)
             except:
@@ -1243,17 +1203,14 @@ def index():
         conversion = request.form.get("conversion")
         uploaded_files = request.files.getlist("files")
         
-        # Filter valid files
-        files = [f for f in uploaded_files if f and f.filename]
+        # Filtrar archivos válidos
+        valid_files = []
+        for f in uploaded_files:
+            if f and f.filename and allowed_filename(f.filename):
+                valid_files.append(f)
         
-        if not files:
-            flash("No se subió ningún archivo válido.", "error")
-            return redirect(url_for("index"))
-        
-        # Check extensions
-        valid_files = [f for f in files if allowed_filename(f.filename)]
         if not valid_files:
-            flash("Formato de archivo no soportado.", "error")
+            flash("No se subió ningún archivo válido.", "error")
             return redirect(url_for("index"))
         
         try:
@@ -1266,10 +1223,22 @@ def index():
 
             elif conversion == "merge_pdfs":
                 pdfs = [f for f in valid_files if is_pdf_filename(f.filename)]
-                if not pdfs:
-                    flash("No se encontraron archivos PDF.", "error")
+                if len(pdfs) < 2:
+                    flash("Se requieren al menos 2 archivos PDF para unir.", "error")
                     return redirect(url_for("index"))
-                result_type, payload = pdfs_merge(pdfs)
+                
+                # Intentar primero con PdfMerger, luego con PdfWriter
+                try:
+                    print("🔄 Intentando unir PDFs con PdfMerger (método 1)...")
+                    result_type, payload = pdfs_merge_v1(pdfs)
+                except Exception as e1:
+                    print(f"❌ PdfMerger falló: {e1}")
+                    print("🔄 Intentando con PdfWriter (método 2)...")
+                    try:
+                        result_type, payload = pdfs_merge_v2(pdfs)
+                    except Exception as e2:
+                        flash(f"Error al unir PDFs: {e2}", "error")
+                        return redirect(url_for("index"))
 
             elif conversion == "pdf_to_docx":
                 pdfs = [f for f in valid_files if is_pdf_filename(f.filename)]
@@ -1282,15 +1251,8 @@ def index():
                 flash("Tipo de conversión no válido.", "error")
                 return redirect(url_for("index"))
 
-            # Return file
+            # Devolver archivo
             if result_type == "single":
-                filename, data, mime = payload
-                response = make_response(data)
-                response.headers.set("Content-Type", mime)
-                response.headers.set("Content-Disposition", "attachment", filename=filename)
-                return response
-                
-            elif result_type == "zip":
                 filename, data, mime = payload
                 response = make_response(data)
                 response.headers.set("Content-Type", mime)
@@ -1322,19 +1284,16 @@ if __name__ == "__main__":
         local_ip = "127.0.0.1"
     
     print("=" * 60)
-    print("XONI-CONVER v3.0 - Conversor Universal")
+    print("XONI-CONVER v3.2 - Conversor Universal (CORREGIDO)")
     print("=" * 60)
     print(f"🌐 URL Local:      http://{local_ip}:{port}")
     print(f"📱 Móvil:          Usa la misma IP en tu red WiFi")
     print("=" * 60)
     print("✨ Características:")
+    print("   • 2 métodos para unir PDFs (sin duplicación)")
     print("   • Interfaz responsive para PC y móvil")
     print("   • Sin límites de tamaño")
     print("   • Procesamiento seguro en memoria")
-    print("   • Drag & drop de archivos")
-    print("=" * 60)
-    print("🚀 Para exponer a internet, ejecuta en otra terminal:")
-    print("   cloudflared tunnel --url http://localhost:5050")
     print("=" * 60)
     
     app.run(
