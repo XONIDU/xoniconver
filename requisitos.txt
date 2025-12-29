@@ -1,4 +1,4 @@
-# Somos XONINDU — XONI‑CONVER
+# Somos XONINDU — XONI‑CONVER v3.2
 
 # Arch Linux
 sudo pacman -Syu python-pip libjpeg-turbo zlib tk
