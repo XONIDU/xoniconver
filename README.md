@@ -1,4 +1,4 @@
-# XONI-CONVER v3.2
+# 📦 XONICONVER v3.2
 
 Servicio web para convertir archivos:
 - Imágenes → PDF
@@ -9,22 +9,26 @@ Interfaz responsive para PC y móvil. Escucha en `0.0.0.0:5050`
 
 ---
 
+## #Somos XONIDU
+
+---
+
 ## 📦 Instalación Rápida
 
-### Arch Linux
+### 🐧 Arch Linux
 ```bash
 sudo pacman -Syu python-pip libjpeg-turbo zlib tk
 pip install Flask Pillow PyPDF2 python-docx --break-system-packages
 ```
 
-### Ubuntu / Debian
+### 🐧 Ubuntu / Debian
 ```bash
 sudo apt update
 sudo apt install -y python3 python3-pip python3-venv python3-tk libjpeg-dev zlib1g-dev
 pip3 install Flask Pillow PyPDF2 python-docx --break-system-packages
 ```
 
-### Windows
+### 🪟 Windows
 ```bash
 pip install Flask Pillow PyPDF2 python-docx
 ```
@@ -34,12 +38,25 @@ pip install Flask Pillow PyPDF2 python-docx
 ## 🚀 Ejecución
 
 ```bash
-python page.py
+python start.py
 ```
 
 Accede desde:
 - PC: `http://localhost:5050`
 - Móvil: `http://TU-IP:5050` (misma red WiFi)
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+xoniconver/
+├── README.md          # Documentación
+├── requisitos.txt     # Dependencias del proyecto
+├── start.py          # Código principal (Python)
+└── templates/        # Plantillas HTML
+    └── index.html    # Interfaz de usuario
+```
 
 ---
 
@@ -51,6 +68,8 @@ Accede desde:
 - 📱 Interfaz responsive para PC/móvil
 - 🔒 Procesamiento seguro en memoria
 - ⚡ Sin límites de tamaño
+- 🎨 Diseño moderno y elegante
+- 📤 Drag & drop para archivos
 
 ---
 
@@ -63,11 +82,30 @@ Accede desde:
 
 ## 🛠️ Solución de Problemas
 
-- **Puerto ocupado:** Cambia el puerto 5050 en `page.py`
+- **Puerto ocupado:** Cambia el puerto 5050 en `start.py`
 - **Error de importación:** Verifica las dependencias instaladas
 - **PDFs protegidos:** No se pueden procesar PDFs con contraseña
 - **Móvil no conecta:** Verifica firewall y IP correcta
+- **Error con --break-system-packages:** Omite esta bandera en sistemas que no lo requieran
 
 ---
 
-**XONI-CONVER v3.2** • by XONIDU • Procesamiento seguro
+## 🔧 Requisitos del Sistema
+
+- Python 3.6 o superior
+- Conexión a internet (solo para instalar dependencias)
+- Navegador web moderno (Chrome, Firefox, Edge, Safari)
+
+---
+
+## 📞 Contacto
+
+¿Dudas o sugerencias?
+
+- 📸 Instagram: @xonidu
+- 📘 Facebook: xonidu
+- 📧 Email: xonidu@gmail.com
+- 👤 Creador: Darian Alberto Camacho Salas
+---
+
+**XONICONVER v3.2** • by XONIDU • Procesamiento seguro • 2024
