@@ -1,4 +1,6 @@
-# Somos XONINDU — XONI‑CONVER v3.2
+# Somos XONINDU — XONICONVER
+
+#Darian Alberto Camacho Salas
 
 # Arch Linux
 sudo pacman -Syu python-pip libjpeg-turbo zlib tk
@@ -13,4 +15,4 @@ pip3 install Flask Pillow PyPDF2 python-docx --break-system-packages
 pip install Flask Pillow PyPDF2 python-docx
 
 # Ejecutar:
-python page.py
+python start.py
