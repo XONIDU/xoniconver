@@ -108,4 +108,4 @@ xoniconver/
 - 👤 Creador: Darian Alberto Camacho Salas
 ---
 
-**XONICONVER v3.2** • by XONIDU • Procesamiento seguro • 2024
+**XONICONVER v3.2** • by XONIDU • Procesamiento seguro • 2026
