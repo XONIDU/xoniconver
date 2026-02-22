@@ -10,6 +10,8 @@ import os
 import tempfile
 import shutil
 from werkzeug.utils import secure_filename
+import qrcode
+from io import StringIO
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_xoni_conver_pc"
@@ -20,6 +22,23 @@ app.config['MAX_CONTENT_LENGTH'] = None
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp"}
 ALLOWED_PDF_EXTENSIONS = {"pdf"}
 ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_PDF_EXTENSIONS)
+
+def generar_qr_terminal(texto):
+    """
+    Genera un código QR en ASCII para mostrar en terminal
+    """
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=2,
+        border=1
+    )
+    qr.add_data(texto)
+    qr.make(fit=True)
+    
+    # Crear imagen QR en ASCII para terminal
+    qr_ascii = StringIO()
+    qr.print_ascii(out=qr_ascii, invert=True)
+    return qr_ascii.getvalue()
 
 def allowed_filename(filename: str) -> bool:
     if not filename or '.' not in filename:
@@ -325,12 +344,22 @@ if __name__ == "__main__":
     except:
         local_ip = "127.0.0.1"
     
+    # Limpiar pantalla
+    os.system('clear' if os.name == 'posix' else 'cls')
+    
     print("=" * 60)
     print("XONI-CONVER v3.2 - Conversor Universal (CORREGIDO)")
     print("=" * 60)
     print(f"🌐 URL Local:      http://{local_ip}:{port}")
     print(f"📱 Móvil:          Usa la misma IP en tu red WiFi")
     print("=" * 60)
+    
+    # Generar QR con la URL
+    url_completa = f"http://{local_ip}:{port}"
+    print("\n📱 ESCANEA ESTE CÓDIGO QR PARA ACCEDER DESDE TU MÓVIL:\n")
+    print(generar_qr_terminal(url_completa))
+    print("\n" + "=" * 60)
+    
     print("✨ Características:")
     print("   • 2 métodos para unir PDFs (sin duplicación)")
     print("   • Interfaz responsive para PC y móvil")
