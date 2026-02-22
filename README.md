@@ -157,15 +157,3 @@ pip list | grep -E "Flask|Pillow|PyPDF2|python-docx|qrcode"
   
 </div>
 
----
-
-<div align="center">
-  
-  **XONICONVER v3.2 • by XONIDU • Procesamiento seguro • 2026**
-  
-  ![Version](https://img.shields.io/badge/version-3.2-blue)
-  ![Python](https://img.shields.io/badge/python-3.6+-green)
-  ![Flask](https://img.shields.io/badge/flask-2.0+-red)
-  ![Status](https://img.shields.io/badge/status-stable-brightgreen)
-  
-</div>
