@@ -21,6 +21,15 @@
 
 ---
 
+## 📥 Instalación
+
+Clona el repositorio desde GitHub:
+
+```bash
+git clone https://github.com/XONIDU/xoniconver.git
+cd xoniconver
+```
+
 ## 🚀 Instalación Rápida
 
 ### 🐧 Arch Linux
