@@ -1,375 +1,243 @@
-from flask import Flask, request, make_response, render_template, flash, redirect, url_for
-from PIL import Image
-from PyPDF2 import PdfReader, PdfWriter, PdfMerger
-from docx import Document
-import io
-import zipfile
-import datetime
-import socket
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+XONICONVER v3.2 - Instalador y Ejecutor
+#Somos XONIDU
+"""
+
 import os
-import tempfile
-import shutil
-from werkzeug.utils import secure_filename
-import qrcode
-from io import StringIO
+import sys
+import subprocess
+import platform
+import time
+import importlib.util
 
-app = Flask(__name__)
-app.secret_key = "clave_secreta_xoni_conver_pc"
+# Colores para terminal
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
 
-# Desactivar límite de tamaño
-app.config['MAX_CONTENT_LENGTH'] = None
+def print_banner():
+    """Muestra el banner de XONICONVER"""
+    os.system('clear' if os.name == 'posix' else 'cls')
+    print(f"{Colors.BLUE}{'='*60}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.HEADER}XONICONVER v3.2 - Instalador y Ejecutor{Colors.END}")
+    print(f"{Colors.BLUE}{'='*60}{Colors.END}")
+    print(f"{Colors.GREEN}Herramienta: Instalacion automatica y ejecucion{Colors.END}")
+    print(f"{Colors.GREEN}Creador: Darian Alberto Camacho Salas{Colors.END}")
+    print(f"{Colors.GREEN}#Somos XONIDU{Colors.END}")
+    print(f"{Colors.BLUE}{'='*60}{Colors.END}\n")
 
-ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp"}
-ALLOWED_PDF_EXTENSIONS = {"pdf"}
-ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_PDF_EXTENSIONS)
-
-def generar_qr_terminal(texto):
-    """
-    Genera un código QR en ASCII para mostrar en terminal
-    """
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=2,
-        border=1
-    )
-    qr.add_data(texto)
-    qr.make(fit=True)
-    
-    # Crear imagen QR en ASCII para terminal
-    qr_ascii = StringIO()
-    qr.print_ascii(out=qr_ascii, invert=True)
-    return qr_ascii.getvalue()
-
-def allowed_filename(filename: str) -> bool:
-    if not filename or '.' not in filename:
+def check_python_version():
+    """Verifica la version de Python"""
+    print(f"{Colors.BLUE}Verificando version de Python...{Colors.END}")
+    version = sys.version_info
+    if version.major >= 3 and version.minor >= 6:
+        print(f"{Colors.GREEN}Python {version.major}.{version.minor}.{version.micro} OK{Colors.END}")
+        return True
+    else:
+        print(f"{Colors.FAIL}Se requiere Python 3.6 o superior{Colors.END}")
         return False
-    ext = filename.rsplit(".", 1)[1].lower()
-    return ext in ALLOWED_EXTENSIONS
 
-def is_image_filename(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
-
-def is_pdf_filename(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_PDF_EXTENSIONS
-
-def images_to_pdf(files):
-    """Convert images to PDF"""
-    pil_images = []
-    temp_dirs = []
+def check_dependencies():
+    """Verifica que dependencias estan instaladas"""
+    dependencies = ['flask', 'PIL', 'PyPDF2', 'docx', 'qrcode']
+    missing = []
+    installed = []
     
-    try:
-        for f in files:
-            if not is_image_filename(f.filename):
-                continue
-            
-            temp_dir = tempfile.mkdtemp()
-            temp_path = os.path.join(temp_dir, secure_filename(f.filename))
-            f.save(temp_path)
-            temp_dirs.append(temp_dir)
-            
-            try:
-                img = Image.open(temp_path).convert("RGB")
-                pil_images.append(img)
-            except Exception as e:
-                print(f"Error procesando imagen {f.filename}: {e}")
-                continue
-        
-        if not pil_images:
-            raise ValueError("No hay imágenes válidas para convertir.")
-        
-        output = io.BytesIO()
-        if len(pil_images) == 1:
-            pil_images[0].save(output, format="PDF")
+    print(f"{Colors.BLUE}Verificando dependencias...{Colors.END}")
+    
+    for dep in dependencies:
+        spec = importlib.util.find_spec(dep)
+        if spec is None:
+            missing.append(dep)
         else:
-            first, rest = pil_images[0], pil_images[1:]
-            first.save(output, format="PDF", save_all=True, append_images=rest)
-        
-        output.seek(0)
-        return ("single", ("imagenes_a_pdf.pdf", output.read(), "application/pdf"))
-        
-    finally:
-        for temp_dir in temp_dirs:
-            try:
-                shutil.rmtree(temp_dir)
-            except:
-                pass
+            installed.append(dep)
+    
+    if installed:
+        print(f"{Colors.GREEN}Instaladas: {', '.join(installed)}{Colors.END}")
+    if missing:
+        print(f"{Colors.WARNING}Faltantes: {', '.join(missing)}{Colors.END}")
+    
+    return missing
 
-def pdfs_merge_v1(files):
-    """Merge PDFs usando PdfMerger - Método 1"""
-    merger = PdfMerger()
-    temp_dirs = []
+def install_dependencies():
+    """Instala las dependencias faltantes"""
+    system = platform.system().lower()
+    missing = check_dependencies()
+    
+    if not missing:
+        print(f"{Colors.GREEN}Todas las dependencias estan instaladas{Colors.END}")
+        return True
+    
+    print(f"\n{Colors.BLUE}Instalando dependencias faltantes...{Colors.END}")
+    
+    pip_cmd = [sys.executable, '-m', 'pip', 'install']
+    packages = ['Flask', 'Pillow', 'PyPDF2', 'python-docx', 'qrcode']
+    
+    if system == 'linux':
+        pip_cmd.append('--break-system-packages')
     
     try:
-        for idx, f in enumerate(files):
-            if not is_pdf_filename(f.filename):
-                continue
-            
-            temp_dir = tempfile.mkdtemp()
-            temp_path = os.path.join(temp_dir, secure_filename(f.filename))
-            f.save(temp_path)
-            temp_dirs.append(temp_dir)
-            
-            try:
-                # Usar PdfMerger que es más robusto para unir
-                merger.append(temp_path)
-                print(f"✅ PDF {idx+1} agregado: {f.filename}")
-            except Exception as e:
-                print(f"❌ Error con PdfMerger para {f.filename}: {e}")
-                raise
-        
-        if len(merger.pages) == 0:
-            raise ValueError("No se pudieron procesar archivos PDF válidos.")
-        
-        print(f"📊 Total de páginas: {len(merger.pages)}")
-        
-        output = io.BytesIO()
-        merger.write(output)
-        merger.close()
-        output.seek(0)
-        
-        return ("single", ("pdfs_combinados.pdf", output.read(), "application/pdf"))
-        
-    finally:
-        for temp_dir in temp_dirs:
-            try:
-                shutil.rmtree(temp_dir, ignore_errors=True)
-            except:
-                pass
+        for package in packages:
+            print(f"{Colors.BLUE}   Instalando {package}...{Colors.END}")
+            subprocess.check_call(pip_cmd + [package], 
+                                stdout=subprocess.DEVNULL, 
+                                stderr=subprocess.DEVNULL)
+        print(f"{Colors.GREEN}Todas las dependencias instaladas correctamente{Colors.END}")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"{Colors.FAIL}Error instalando dependencias: {e}{Colors.END}")
+        return False
 
-def pdfs_merge_v2(files):
-    """Merge PDFs usando PdfWriter - Método 2 (alternativo)"""
-    writer = PdfWriter()
-    processed_pages = 0
+def check_system_dependencies():
+    """Verifica dependencias del sistema (Linux)"""
+    if platform.system().lower() != 'linux':
+        return True
+    
+    print(f"{Colors.BLUE}Verificando dependencias del sistema...{Colors.END}")
+    
+    if os.path.exists('/etc/arch-release'):
+        pkgs = ['python-pip', 'libjpeg-turbo', 'zlib', 'tk']
+        cmd = ['pacman', '-Q'] + pkgs
+    elif os.path.exists('/etc/debian_version'):
+        pkgs = ['python3', 'python3-pip', 'python3-venv', 'python3-tk', 'libjpeg-dev', 'zlib1g-dev']
+        cmd = ['dpkg', '-l'] + pkgs
+    else:
+        return True
     
     try:
-        for idx, f in enumerate(files):
-            if not is_pdf_filename(f.filename):
-                continue
-            
-            # Guardar en memoria directamente
-            f.seek(0)
-            pdf_bytes = f.read()
-            pdf_stream = io.BytesIO(pdf_bytes)
-            
-            try:
-                reader = PdfReader(pdf_stream)
-                
-                # Verificar páginas
-                if len(reader.pages) == 0:
-                    print(f"⚠️ PDF vacío: {f.filename}")
-                    continue
-                
-                # Agregar TODAS las páginas
-                for page in reader.pages:
-                    writer.add_page(page)
-                    processed_pages += 1
-                
-                print(f"✅ PDF {idx+1}: {f.filename} ({len(reader.pages)} páginas)")
-                
-            except Exception as e:
-                print(f"❌ Error leyendo PDF {f.filename}: {e}")
-                continue
-        
-        if processed_pages == 0:
-            raise ValueError("No se pudieron procesar archivos PDF válidos.")
-        
-        print(f"📊 Total final de páginas: {processed_pages}")
-        
-        output = io.BytesIO()
-        writer.write(output)
-        output.seek(0)
-        
-        return ("single", ("pdfs_unidos.pdf", output.read(), "application/pdf"))
-        
-    finally:
-        try:
-            writer.close()
-        except:
-            pass
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        print(f"{Colors.GREEN}Dependencias del sistema OK{Colors.END}")
+        return True
+    except:
+        print(f"{Colors.WARNING}Algunas dependencias del sistema podrian faltar{Colors.END}")
+        print(f"{Colors.WARNING}Revisa el README.md para instalarlas manualmente{Colors.END}")
+        return True
 
-def pdf_to_docx(files):
-    """Convert PDF(s) to single DOCX file"""
-    doc = Document()
-    temp_dirs = []
-    
-    try:
-        doc.add_heading('Documento Convertido de PDF', 0)
-        text_extracted = False
-        
-        for idx, f in enumerate(files):
-            if not is_pdf_filename(f.filename):
-                continue
-            
-            temp_dir = tempfile.mkdtemp()
-            temp_path = os.path.join(temp_dir, secure_filename(f.filename))
-            f.save(temp_path)
-            temp_dirs.append(temp_dir)
-            
-            try:
-                reader = PdfReader(temp_path)
-                
-                if len(files) > 1:
-                    doc.add_heading(f"PDF: {f.filename}", level=2)
-                
-                for page_num, page in enumerate(reader.pages, 1):
-                    try:
-                        text = page.extract_text()
-                        if text and text.strip():
-                            text_extracted = True
-                            
-                            if len(reader.pages) > 1:
-                                doc.add_heading(f"Página {page_num}", level=3)
-                            
-                            doc.add_paragraph(text)
-                            
-                            if page_num < len(reader.pages):
-                                doc.add_page_break()
-                    except:
-                        continue
-                
-                if idx < len(files) - 1:
-                    doc.add_heading("─" * 50, level=2)
-                    
-            except Exception as e:
-                doc.add_paragraph(f"Error procesando {f.filename}: {str(e)}")
-                continue
-        
-        if not text_extracted:
-            doc.add_paragraph("No se pudo extraer texto de los PDFs.")
-        
-        doc_buffer = io.BytesIO()
-        doc.save(doc_buffer)
-        doc_buffer.seek(0)
-        
-        if len(files) == 1:
-            base_name = files[0].filename.rsplit(".", 1)[0]
-            filename = f"{base_name}_convertido.docx"
-        else:
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"pdfs_combinados_{timestamp}.docx"
-        
-        return ("single", (filename, doc_buffer.read(), 
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-        
-    finally:
-        for temp_dir in temp_dirs:
-            try:
-                shutil.rmtree(temp_dir)
-            except:
-                pass
+def check_port(port=5050):
+    """Verifica si el puerto esta disponible"""
+    import socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('127.0.0.1', port))
+    sock.close()
+    return result != 0
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        conversion = request.form.get("conversion")
-        uploaded_files = request.files.getlist("files")
-        
-        # Filtrar archivos válidos
-        valid_files = []
-        for f in uploaded_files:
-            if f and f.filename and allowed_filename(f.filename):
-                valid_files.append(f)
-        
-        if not valid_files:
-            flash("No se subió ningún archivo válido.", "error")
-            return redirect(url_for("index"))
-        
-        try:
-            if conversion == "images_to_pdf":
-                imgs = [f for f in valid_files if is_image_filename(f.filename)]
-                if not imgs:
-                    flash("No se encontraron imágenes válidas.", "error")
-                    return redirect(url_for("index"))
-                result_type, payload = images_to_pdf(imgs)
-
-            elif conversion == "merge_pdfs":
-                pdfs = [f for f in valid_files if is_pdf_filename(f.filename)]
-                if len(pdfs) < 2:
-                    flash("Se requieren al menos 2 archivos PDF para unir.", "error")
-                    return redirect(url_for("index"))
-                
-                # Intentar primero con PdfMerger, luego con PdfWriter
-                try:
-                    print("🔄 Intentando unir PDFs con PdfMerger (método 1)...")
-                    result_type, payload = pdfs_merge_v1(pdfs)
-                except Exception as e1:
-                    print(f"❌ PdfMerger falló: {e1}")
-                    print("🔄 Intentando con PdfWriter (método 2)...")
-                    try:
-                        result_type, payload = pdfs_merge_v2(pdfs)
-                    except Exception as e2:
-                        flash(f"Error al unir PDFs: {e2}", "error")
-                        return redirect(url_for("index"))
-
-            elif conversion == "pdf_to_docx":
-                pdfs = [f for f in valid_files if is_pdf_filename(f.filename)]
-                if not pdfs:
-                    flash("No se encontraron archivos PDF.", "error")
-                    return redirect(url_for("index"))
-                result_type, payload = pdf_to_docx(pdfs)
-
-            else:
-                flash("Tipo de conversión no válido.", "error")
-                return redirect(url_for("index"))
-
-            # Devolver archivo
-            if result_type == "single":
-                filename, data, mime = payload
-                response = make_response(data)
-                response.headers.set("Content-Type", mime)
-                response.headers.set("Content-Disposition", "attachment", filename=filename)
-                return response
-                
-            else:
-                flash("Error en la conversión.", "error")
-                return redirect(url_for("index"))
-
-        except Exception as e:
-            flash(f"Error: {str(e)}", "error")
-            return redirect(url_for("index"))
-
-    return render_template('index.html')
-
-@app.route("/health")
-def health():
-    return "OK", 200
-
-if __name__ == "__main__":
-    host = "0.0.0.0"
-    port = 5050
-    
+def get_local_ip():
+    """Obtiene la IP local"""
     try:
         hostname = socket.gethostname()
         local_ip = socket.gethostbyname(hostname)
+        return local_ip
     except:
-        local_ip = "127.0.0.1"
+        return "127.0.0.1"
+
+def show_menu():
+    """Muestra el menu principal"""
+    print(f"\n{Colors.BOLD}MENU PRINCIPAL:{Colors.END}")
+    print(f"{Colors.BLUE}1.{Colors.END} Iniciar XONICONVER")
+    print(f"{Colors.BLUE}2.{Colors.END} Revisar dependencias")
+    print(f"{Colors.BLUE}3.{Colors.END} Instalar dependencias")
+    print(f"{Colors.BLUE}4.{Colors.END} Ver README")
+    print(f"{Colors.BLUE}5.{Colors.END} Salir")
     
-    # Limpiar pantalla
-    os.system('clear' if os.name == 'posix' else 'cls')
+    choice = input(f"\n{Colors.BOLD}Selecciona una opcion (1-5): {Colors.END}")
+    return choice
+
+def show_readme():
+    """Muestra el README"""
+    readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
+    if os.path.exists(readme_path):
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            print(f"\n{Colors.BLUE}{'='*60}{Colors.END}")
+            print(f.read())
+            print(f"{Colors.BLUE}{'='*60}{Colors.END}")
+    else:
+        print(f"{Colors.WARNING}Archivo README.md no encontrado{Colors.END}")
     
-    print("=" * 60)
-    print("XONI-CONVER v3.2 - Conversor Universal (CORREGIDO)")
-    print("=" * 60)
-    print(f"🌐 URL Local:      http://{local_ip}:{port}")
-    print(f"📱 Móvil:          Usa la misma IP en tu red WiFi")
-    print("=" * 60)
+    input(f"\n{Colors.BLUE}Presiona Enter para continuar...{Colors.END}")
+
+def start_xoniconver():
+    """Inicia XONICONVER"""
+    if not check_port():
+        print(f"{Colors.WARNING}El puerto 5050 esta en uso{Colors.END}")
+        response = input(f"{Colors.BOLD}Intentar de todas formas? (s/n): {Colors.END}")
+        if response.lower() != 's':
+            return
     
-    # Generar QR con la URL
-    url_completa = f"http://{local_ip}:{port}"
-    print("\n📱 ESCANEA ESTE CÓDIGO QR PARA ACCEDER DESDE TU MÓVIL:\n")
-    print(generar_qr_terminal(url_completa))
-    print("\n" + "=" * 60)
+    main_file = os.path.join(os.path.dirname(__file__), 'xoniconver.py')
+    if not os.path.exists(main_file):
+        print(f"{Colors.FAIL}No se encuentra xoniconver.py{Colors.END}")
+        return
     
-    print("✨ Características:")
-    print("   • 2 métodos para unir PDFs (sin duplicación)")
-    print("   • Interfaz responsive para PC y móvil")
-    print("   • Sin límites de tamaño")
-    print("   • Procesamiento seguro en memoria")
-    print("=" * 60)
+    print(f"\n{Colors.GREEN}Todo listo para iniciar{Colors.END}")
+    print(f"{Colors.BLUE}Servidor disponible en:{Colors.END}")
+    print(f"   Local: {Colors.BOLD}http://localhost:5050{Colors.END}")
+    print(f"   Red:   {Colors.BOLD}http://{get_local_ip()}:5050{Colors.END}")
+    print(f"\n{Colors.WARNING}Presiona Ctrl+C para detener el servidor{Colors.END}")
+    print(f"{Colors.BLUE}{'='*60}{Colors.END}\n")
     
-    app.run(
-        host=host, 
-        port=port, 
-        debug=False,
-        threaded=True
-    )
+    time.sleep(2)
+    
+    try:
+        subprocess.run([sys.executable, main_file])
+    except KeyboardInterrupt:
+        print(f"\n{Colors.WARNING}Servidor detenido{Colors.END}")
+    except Exception as e:
+        print(f"{Colors.FAIL}Error al ejecutar: {e}{Colors.END}")
+
+def main():
+    """Funcion principal"""
+    print_banner()
+    
+    if not check_python_version():
+        sys.exit(1)
+    
+    check_system_dependencies()
+    
+    while True:
+        choice = show_menu()
+        
+        if choice == '1':
+            if not check_dependencies():
+                print(f"{Colors.WARNING}Faltan dependencias{Colors.END}")
+                response = input(f"{Colors.BOLD}Instalar ahora? (s/n): {Colors.END}")
+                if response.lower() == 's':
+                    if install_dependencies():
+                        start_xoniconver()
+                else:
+                    print(f"{Colors.WARNING}No se puede iniciar sin dependencias{Colors.END}")
+            else:
+                start_xoniconver()
+        
+        elif choice == '2':
+            check_dependencies()
+            input(f"\n{Colors.BLUE}Presiona Enter para continuar...{Colors.END}")
+        
+        elif choice == '3':
+            install_dependencies()
+            input(f"\n{Colors.BLUE}Presiona Enter para continuar...{Colors.END}")
+        
+        elif choice == '4':
+            show_readme()
+        
+        elif choice == '5':
+            print(f"\n{Colors.GREEN}Hasta luego! #SomosXONIDU{Colors.END}")
+            sys.exit(0)
+        
+        else:
+            print(f"{Colors.FAIL}Opcion no valida{Colors.END}")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(f"\n{Colors.GREEN}Hasta luego!{Colors.END}")
+        sys.exit(0)
