@@ -1,4 +1,4 @@
-# 📦 XONICONVER v4.2.0
+# 📦 XONICONVER v3.2
 
 <div align="center">
   <h3>Servicio web para conversión de archivos universal</h3>
@@ -8,16 +8,19 @@
 
 ---
 
-## ✨ Características Principales
+## 🎯 ¿Qué es XONICONVER?
 
-- 🖼️ **Conversión de Imágenes a PDF** - Convierte múltiples imágenes en un solo PDF
-- 🔗 **Unión de PDFs** - Combina múltiples PDFs en uno solo (corregido sin duplicación)
-- 📝 **Extracción de Texto** - Convierte PDF a Word (.docx) extrayendo texto
-- 📱 **Interfaz Responsive** - Diseño adaptable para PC y dispositivos móviles
-- 🔒 **Procesamiento Seguro** - Todo el procesamiento se realiza en memoria
-- ⚡ **Sin Límites de Tamaño** - Procesa archivos de cualquier tamaño
-- 🎨 **Diseño Moderno** - Interfaz elegante con drag & drop
-- 📤 **Múltiples Formatos** - Soporte para PNG, JPG, JPEG, BMP, GIF, TIFF, WEBP y PDF
+XONICONVER es una herramienta Python que proporciona un servicio web para convertir archivos de manera sencilla y rápida. Consta de dos componentes:
+
+- **start.py** - Lanzador universal que verifica dependencias y ejecuta el programa principal
+- **xoniconver.py** - Programa principal con el servidor web y la lógica de conversión
+
+Permite:
+- 🖼️ Convertir imágenes a PDF
+- 🔗 Unir múltiples PDFs en uno solo (corregido sin duplicación)
+- 📝 Extraer texto de PDF a Word (.docx)
+
+El script inicia un servidor web accesible desde cualquier dispositivo en la misma red (PC, móvil, tablet) con una interfaz responsive y moderna.
 
 ---
 
@@ -30,56 +33,120 @@ git clone https://github.com/XONIDU/xoniconver.git
 cd xoniconver
 ```
 
-## 🚀 Instalación Rápida
+✅ **Requisitos**
 
-### 🐧 Arch Linux
+- Python 3.6+ instalado
+- Dependencias Python listadas en requisitos.txt
+- Conexión a internet (solo para instalar dependencias)
+
+### Dependencias del sistema por plataforma:
+
+#### 🐧 Arch Linux
 ```bash
+# Instalar dependencias del sistema
 sudo pacman -Syu python-pip libjpeg-turbo zlib tk
-pip install Flask Pillow PyPDF2 python-docx qrcode --break-system-packages
+
+# Instalar dependencias Python
+pip install -r requisitos.txt --break-system-packages
 ```
 
-### 🐧 Ubuntu / Debian
+#### 🐧 Ubuntu / Debian
 ```bash
+# Actualizar repositorios
 sudo apt update
-sudo apt install -y python3 python3-pip python3-venv python3-tk libjpeg-dev zlib1g-dev
-pip3 install Flask Pillow PyPDF2 python-docx qrcode --break-system-packages
+
+# Instalar dependencias del sistema
+sudo apt install python3 python3-pip python3-venv python3-tk libjpeg-dev zlib1g-dev -y
+
+# Instalar dependencias Python
+pip3 install -r requisitos.txt --break-system-packages
 ```
 
-### 🪟 Windows
+#### 🪟 Windows
 ```bash
-pip install Flask Pillow PyPDF2 python-docx qrcode
+# Instalar dependencias Python
+pip install -r requisitos.txt
 ```
 
 ---
 
-## 📦 Estructura del Proyecto
+## ⚙️ Uso
 
-```
-xoniconver/
-├── README.md          # Documentación
-├── requisitos.txt     # Dependencias del proyecto
-├── start.py          # Código principal (Python)
-└── templates/        # Plantillas HTML
-    └── index.html    # Interfaz de usuario
-```
+### Iniciar el servidor
 
----
-
-## 🎯 Uso
-
-### Iniciar el Servidor
 ```bash
 python start.py
 ```
 
+El lanzador verificará las dependencias y automáticamente ejecutará xoniconver.py mostrando:
+
+- ✅ Estado de las dependencias
+- 🌐 URL local de acceso
+- 📱 Código QR para acceso rápido desde móvil
+- ✨ Características disponibles
+
 ### Acceder desde:
+
 - **PC**: `http://localhost:5050`
 - **Móvil**: `http://[TU-IP]:5050` (misma red WiFi)
 
-El servidor mostrará automáticamente:
-- URL local de acceso
-- Código QR para acceso rápido desde móvil
-- Estado de los servicios disponibles
+### En el menú principal de XONICONVER:
+
+```
+MENU PRINCIPAL:
+  1. Iniciar XONICONVER
+  2. Revisar dependencias
+  3. Instalar dependencias
+  4. Ver README
+  5. Salir
+```
+
+### Accesos directos
+
+El lanzador crea automáticamente accesos directos para facilitar la ejecución:
+
+- **Windows**: INICIAR_XONICONVER.bat (doble clic)
+- **Linux**: INICIAR_XONICONVER.sh (ejecutar con ./INICIAR_XONICONVER.sh)
+- **MacOS**: INICIAR_XONICONVER.command (doble clic)
+
+### ✋ Detener el servidor
+
+- Presiona `Ctrl + C` en la terminal donde se ejecuta el servidor
+
+---
+
+## 🎯 Funcionalidades
+
+### 1. Imágenes a PDF
+- Convierte una o múltiples imágenes en un solo archivo PDF
+- Formatos soportados: PNG, JPG, JPEG, BMP, GIF, TIFF, WEBP
+- Mantiene la calidad original de las imágenes
+
+### 2. Unir PDFs (CORREGIDO v3.2)
+- **Dos métodos de unión** para máxima compatibilidad:
+  - Método 1: PdfMerger (estándar)
+  - Método 2: PdfWriter (alternativo)
+- **Sin duplicación de páginas** - Problema solucionado en v3.2
+- Combina documentos de diferentes fuentes
+
+### 3. PDF a Word (DOCX)
+- Extrae texto de archivos PDF
+- Mantiene la estructura básica de títulos y párrafos
+- Soporta múltiples páginas y documentos
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+xoniconver/
+├── README.md          # Documentación
+├── requisitos.txt     # Dependencias Python
+├── start.py          # Lanzador universal
+├── xoniconver.py     # Programa principal (servidor web)
+└── templates/        # Plantillas HTML
+    └── index.html    # Interfaz de usuario responsive
+```
 
 ---
 
@@ -92,77 +159,62 @@ El servidor mostrará automáticamente:
 
 ---
 
-## 🛠️ Funcionalidades Detalladas
-
-### 1. Imágenes a PDF
-- Convierte una o múltiples imágenes en un solo archivo PDF
-- Mantiene la calidad original de las imágenes
-- Ordena las imágenes según la selección
-
-### 2. Unir PDFs (CORREGIDO)
-- **Dos métodos de unión** para máxima compatibilidad:
-  - Método 1: PdfMerger (estándar)
-  - Método 2: PdfWriter (alternativo)
-- **Sin duplicación de páginas** - Problema solucionado en v3.2
-- Combina documentos de diferentes fuentes
-- Preserva el formato original
-
-### 3. PDF a Word (DOCX)
-- Extrae texto de archivos PDF
-- Mantiene la estructura básica de títulos y párrafos
-- Soporta múltiples páginas y documentos
-
----
-
 ## 🔧 Solución de Problemas
 
-### Puerto ocupado
+### "El puerto 5050 está en uso"
 ```bash
-# Cambia el puerto 5050 en start.py
+# Cambia el puerto en xoniconver.py
 port = 5050  # Modificar este valor
 ```
 
-### Error de importación
+### "Error de importación"
 ```bash
 # Verifica las dependencias instaladas
 pip list | grep -E "Flask|Pillow|PyPDF2|python-docx|qrcode"
 ```
 
-### PDFs protegidos
-> ⚠️ No se pueden procesar PDFs con contraseña
-
-### Móvil no conecta
+### "Móvil no conecta"
 - Verifica que ambos dispositivos estén en la misma red WiFi
-- Comprueba el firewall (puerto 5050)
-- Usa la IP correcta mostrada al iniciar
+- Comprueba el firewall (puerto 5050 abierto)
+- Usa la IP correcta mostrada al iniciar el servidor
+
+### "PDFs protegidos"
+> ⚠️ No se pueden procesar PDFs con contraseña
 
 ### Error con `--break-system-packages`
 > En sistemas que no lo requieran, omite esta bandera
 
----
-
-## 📋 Requisitos del Sistema
-
-- **Python**: 3.6 o superior
-- **Conexión a Internet**: Solo para instalar dependencias
-- **Navegador**: Chrome, Firefox, Edge, Safari (versiones actualizadas)
-- **Memoria RAM**: 512MB mínimo (recomendado 1GB+)
+### "No se encuentra xoniconver.py"
+- Asegúrate de que xoniconver.py está en el mismo directorio que start.py
+- Verifica la estructura del proyecto
 
 ---
 
-## 📞 Contacto
+## 🔒 Consideraciones de seguridad
 
-<div align="center">
-  
-  **¿Dudas o sugerencias?**
-  
-  📸 **Instagram**: [@xonidu](https://instagram.com/xonidu)
-  
-  📘 **Facebook**: [xonidu](https://facebook.com/xonidu)
-  
-  📧 **Email**: xonidu@gmail.com
-  
-  👤 **Creador**: Darian Alberto Camacho Salas
-  
-</div>
+- ✅ Procesamiento seguro en memoria (no guarda archivos en disco)
+- ✅ Sin límites de tamaño en archivos
+- ✅ Interfaz local (solo accesible en tu red)
+- ✅ Sin almacenamiento de archivos temporales
 
+---
+
+## 📊 Estadísticas del proyecto
+
+- **Versión**: 3.2
+- **Lenguaje**: Python 100%
+- **Última actualización**: 2026
+- **Estado**: Stable
+
+---
+
+## ✉️ Contacto y Créditos
+
+- **Proyecto**: XONICONVER
+- **Email**: xonidu@gmail.com
+- **Instagram**: @xonidu
+- **Facebook**: xonidu
+- **Creador**: Darian Alberto Camacho Salas
+- **#Somos XONIDU**
+
+---
