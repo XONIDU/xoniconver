@@ -18,7 +18,7 @@ sudo apt update
 sudo apt install python3 python3-pip -y
 pip3 install flask pillow pypdf2 python-docx qrcode --break-system-packages
 
-## Cloudflare Tunnel (opcional - para acceso remoto):
+## Cloudflare Tunnel (opcional - acceso remoto):
 Linux: https://github.com/cloudflare/cloudflared/releases
 Arch: sudo pacman -S cloudflared
 Uso: cloudflared tunnel --url http://localhost:5050
