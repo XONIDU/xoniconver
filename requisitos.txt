@@ -1,4 +1,4 @@
-# XONI-CONVER - Requisitos
+# XONICONVER - Requisitos
 # Darian Alberto Camacho Salas
 
 ## Dependencias Python:
