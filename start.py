@@ -4,6 +4,7 @@
 """
 XONICONVER v3.2 - Instalador y Ejecutor
 #Somos XONIDU
+#Creador: Darian Alberto Camacho Salas
 """
 
 import os
