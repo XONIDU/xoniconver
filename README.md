@@ -62,6 +62,27 @@ sudo apt install python3 python3-pip python3-venv python3-tk libjpeg-dev zlib1g-
 pip3 install -r requisitos.txt --break-system-packages
 ```
 
+---
+### Opción 2 – Comando `xoninstall` (recomendado para futuras herramientas XONI)
+
+Agrega la siguiente función a tu `~/.bashrc` con un solo comando:
+
+```bash
+echo 'xoninstall() { if [ -z "$1" ]; then echo "Uso: xoninstall <repo>"; echo "Ej: xoninstall xoniran"; else git clone "https://github.com/XONIDU/$1.git"; fi; }' >> ~/.bashrc && source ~/.bashrc && echo "✅ Listo. Usa: xoninstall xonicli"
+```
+
+Luego simplemente escribe:
+
+```bash
+xoninstall xonicli
+cd xonicli
+pip install -r requisitos.txt
+python start.py
+```
+
+> **Nota:** Esta función te servirá para instalar cualquier otra herramienta futura de XONIDU (por ejemplo `xoninstall xonicli`).
+---
+
 #### 🪟 Windows
 ```bash
 # Instalar dependencias Python
