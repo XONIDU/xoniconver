@@ -2,955 +2,411 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>XONICONVER | Conversor Universal</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="theme-color" content="#2d3748">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>XONICONVER v3.2 · Conversor universal</title>
     <style>
-        :root {
-            --primary-dark: #1a365d;
-            --primary: #2d3748;
-            --accent: #4a5568;
-            --light: #f7fafc;
-            --border: #e2e8f0;
-            --text: #2d3748;
-            --text-light: #718096;
-            --success: #38a169;
-            --error: #e53e3e;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --radius-lg: 12px;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 15px;
-            font-size: 16px;
+            font-family: 'Segoe UI', 'Fira Code', monospace;
+            background-color: #000000;
+            color: #00ff00;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        @media (min-width: 768px) {
-            body {
-                padding: 30px 20px;
-            }
+        /* Barra de navegación */
+        nav {
+            background-color: #000000;
+            border-bottom: 1px solid #00ff00;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+            backdrop-filter: blur(2px);
+        }
+
+        nav a {
+            color: #00ff00;
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.3s;
+            display: inline-block;
+            border-radius: 6px;
+        }
+
+        nav a:hover {
+            background-color: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 8px #0f0;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
+        /* Logo / cabecera */
         .header {
-            background: linear-gradient(to right, var(--primary-dark), var(--primary));
-            color: white;
-            padding: 25px 20px;
             text-align: center;
+            margin: 15px 0 10px;
         }
 
-        @media (min-width: 768px) {
-            .header {
-                padding: 40px;
-            }
-        }
-
-        .header-icon {
+        .logo-text {
             font-size: 2.5rem;
-            margin-bottom: 15px;
-            display: block;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px #0f0;
         }
 
-        @media (min-width: 768px) {
-            .header-icon {
-                font-size: 3rem;
-                margin-bottom: 20px;
-            }
+        .badge {
+            display: inline-block;
+            background: #0f0;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 5px;
         }
 
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+        h1, h2, h3 {
+            color: #ffffff;
+            margin: 20px 0 15px;
+            border-left: 4px solid #00ff00;
+            padding-left: 15px;
         }
 
-        @media (min-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
+        h1 {
+            text-align: center;
+            border-left: none;
+            font-size: 2rem;
         }
 
-        .header p {
-            font-size: 1rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.5;
-        }
-
-        @media (min-width: 768px) {
-            .header p {
-                font-size: 1.1rem;
-                line-height: 1.6;
-            }
-        }
-
-        .content {
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        @media (min-width: 1024px) {
-            .content {
-                padding: 40px;
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                gap: 40px;
-                min-height: 500px;
-            }
-        }
-
-        .form-container {
-            width: 100%;
-        }
-
-        @media (min-width: 1024px) {
-            .form-container {
-                border-right: 1px solid var(--border);
-                padding-right: 40px;
-            }
-        }
-
-        .form-title {
-            font-size: 1.4rem;
-            font-weight: 600;
+        .subtitulo {
+            text-align: center;
+            color: #bbffbb;
             margin-bottom: 25px;
-            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+
+        /* Tarjetas / formularios */
+        .card {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 15px rgba(0,255,0,0.2);
+        }
+
+        /* Opciones de conversión */
+        .opciones {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        @media (min-width: 768px) {
-            .form-title {
-                font-size: 1.5rem;
-            }
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        @media (min-width: 768px) {
-            .form-group {
-                margin-bottom: 25px;
-            }
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text);
-            font-size: 0.95rem;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            background: white;
-            color: var(--text);
-            transition: all 0.2s;
-            cursor: pointer;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 16px;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
-        }
-
-        .file-upload {
-            border: 3px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 30px 15px;
-            text-align: center;
-            background: var(--light);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        @media (min-width: 768px) {
-            .file-upload {
-                padding: 40px 20px;
-            }
-        }
-
-        .file-upload:hover, .file-upload.dragover {
-            border-color: var(--success);
-            background: rgba(56, 161, 105, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .upload-icon {
-                font-size: 3rem;
-            }
-        }
-
-        .upload-text h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-
-        @media (min-width: 768px) {
-            .upload-text h3 {
-                font-size: 1.3rem;
-            }
-        }
-
-        .upload-text p {
-            color: var(--text-light);
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
-
-        .browse-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
             justify-content: center;
-            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .opcion-btn {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #0f0;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
             font-size: 1rem;
-            width: 100%;
-            max-width: 250px;
         }
 
-        .browse-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+        .opcion-btn.active, .opcion-btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 10px #0f0;
         }
 
-        .browse-btn:active {
-            transform: translateY(0);
+        /* Área de subida */
+        .upload-area {
+            border: 2px dashed #2a6b2a;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            background: #050505;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-area.drag-over {
+            border-color: #0f0;
+            background: #0a1a0a;
         }
 
         .file-list {
-            margin-top: 20px;
-            max-height: 250px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            max-height: 200px;
             overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--light);
+            background: #111;
+            padding: 10px;
+            border-radius: 12px;
         }
 
         .file-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
+            padding: 6px 10px;
+            border-bottom: 1px solid #2a6b2a;
         }
 
-        .file-item:hover {
-            background: rgba(26, 54, 93, 0.05);
-        }
-
-        .file-item:last-child {
-            border-bottom: none;
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .file-icon {
-            color: var(--primary);
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .file-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .file-name {
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.95rem;
-        }
-
-        @media (min-width: 768px) {
-            .file-name {
-                font-size: 1rem;
-            }
-        }
-
-        .file-size {
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        .file-remove {
-            background: none;
+        button {
+            background: #00ff00;
+            color: #000;
             border: none;
-            color: var(--error);
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background 0.2s;
-            flex-shrink: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .file-remove:hover {
-            background: rgba(229, 62, 62, 0.1);
-        }
-
-        .convert-btn {
-            width: 100%;
-            background: linear-gradient(to right, var(--primary-dark), var(--primary));
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: var(--radius);
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            touch-action: manipulation;
-        }
-
-        .convert-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(26, 54, 93, 0.2);
-        }
-
-        .convert-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .convert-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .info-panel {
-            padding: 25px;
-            background: var(--light);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        @media (min-width: 1024px) {
-            .info-panel {
-                margin-top: 0;
-            }
-        }
-
-        .info-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-list {
-            list-style: none;
-        }
-
-        .info-item {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .info-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .info-item strong {
-            color: var(--primary);
-            display: block;
-            margin-bottom: 5px;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
             font-size: 1rem;
-        }
-
-        .info-item p {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .file-counter {
-            text-align: center;
-            margin-top: 15px;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            padding: 12px;
-            background: var(--light);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        .messages {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            left: 15px;
-            width: auto;
-            z-index: 1000;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-            .messages {
-                right: 20px;
-                left: auto;
-                width: 350px;
-            }
-        }
-
-        .message {
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            margin-bottom: 10px;
-            animation: slideIn 0.3s ease;
-            box-shadow: var(--shadow);
-            border-left: 4px solid;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        .message.success {
-            border-left-color: var(--success);
-            color: var(--success);
-        }
-
-        .message.error {
-            border-left-color: var(--error);
-            color: var(--error);
-        }
-
-        .message-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .message-text {
-            flex: 1;
-        }
-
-        .message-close {
-            background: none;
-            border: none;
-            color: inherit;
             cursor: pointer;
-            font-size: 1.2rem;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .message-close:hover {
-            opacity: 1;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .footer {
-            text-align: center;
-            padding: 25px 20px;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border);
-            background: var(--light);
-        }
-
-        .footer p {
-            margin-bottom: 5px;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            backdrop-filter: blur(3px);
-        }
-
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .loading-text {
+            transition: 0.2s;
             margin-top: 15px;
-            color: var(--text);
-            font-weight: 500;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        button:hover {
+            background: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px #0f0;
         }
 
-        .hidden {
-            display: none !important;
+        .flash {
+            background: #1a2a1a;
+            border-left: 5px solid #0f0;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
         }
 
-        .text-center {
+        .qr-section {
             text-align: center;
+            background: #0a0a0a;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #2a6b2a;
         }
 
-        @media (max-width: 767px) {
-            button, 
-            .form-select,
-            .file-item {
-                min-height: 48px;
-            }
-            
-            .file-remove {
-                width: 44px;
-                height: 44px;
-            }
-            
-            .browse-btn {
-                padding: 16px 24px;
-            }
+        .qr-img {
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px auto;
         }
 
-        #fileInput {
-            display: none;
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #2a6b2a;
+            color: #88ff88;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                width: 95%;
+            }
+            .opcion-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="text-center">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Procesando archivos...</div>
-        </div>
+
+
+<div class="container" id="inicio">
+    <div class="header">
+        <div class="logo-text">XONICONVER</div>
+        <div class="subtitulo">📄 Conversor universal · Imágenes → PDF · Unir PDFs · PDF → Word</div>
+        <div><span class="badge">v3.2</span><span class="badge">Código abierto</span><span class="badge">#SomosXONIDU</span></div>
     </div>
 
-    <div class="messages" id="messagesContainer"></div>
+    <!-- Mensajes flash desde Flask -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <div class="container">
-        <header class="header">
-            <div class="header-icon">🔄</div>
-            <h1>XONI-CONVER</h1>
-            <p>Conversor universal para PC y móvil. Convierte imágenes a PDF, une múltiples PDFs y extrae texto de PDF a Word.</p>
-        </header>
+    <!-- Tarjeta principal del conversor -->
+    <div class="card">
+        <h2>🛠️ Elige la conversión</h2>
+        <form id="conversionForm" method="POST" enctype="multipart/form-data" action="/">
+            <input type="hidden" name="conversion" id="conversionType" value="images_to_pdf">
 
-        <div class="content">
-            <div class="form-container">
-                <h2 class="form-title">
-                    📁 Conversor de Archivos
-                </h2>
-
-                <form method="POST" enctype="multipart/form-data" id="converterForm">
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Conversión</label>
-                        <select name="conversion" id="conversion" class="form-select" required>
-                            <option value="images_to_pdf">Imágenes → PDF</option>
-                            <option value="merge_pdfs">Unir PDFs → PDF único</option>
-                            <option value="pdf_to_docx">PDF → Word (.docx)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Archivos a Convertir</label>
-                        <div class="file-upload" id="fileUploadArea">
-                            <div class="upload-icon">📎</div>
-                            <div class="upload-text">
-                                <h3>Arrastra y suelta archivos aquí</h3>
-                                <p>O haz clic para seleccionar</p>
-                                <button type="button" class="browse-btn" id="browseButton">
-                                    Explorar Archivos
-                                </button>
-                            </div>
-                            <input type="file" name="files" id="fileInput" multiple required 
-                                   accept=".pdf,image/*">
-                        </div>
-
-                        <div class="file-list" id="fileList">
-                            <div class="file-item" style="justify-content: center; color: var(--text-light);">
-                                No hay archivos seleccionados
-                            </div>
-                        </div>
-
-                        <div class="file-counter" id="fileCounter">
-                            0 archivos | 0 KB
-                        </div>
-                    </div>
-
-                    <button type="submit" class="convert-btn" id="convertButton" disabled>
-                        <span>🔄</span>
-                        Convertir Archivos
-                    </button>
-                </form>
+            <div class="opciones">
+                <button type="button" class="opcion-btn active" data-conv="images_to_pdf">🖼️ Imágenes → PDF</button>
+                <button type="button" class="opcion-btn" data-conv="merge_pdfs">🔗 Unir PDFs (sin duplicación)</button>
+                <button type="button" class="opcion-btn" data-conv="pdf_to_docx">📝 PDF → Word (.docx)</button>
             </div>
 
-            <div class="info-panel">
-                <h3 class="info-title">
-                    ℹ️ Información
-                </h3>
-                
-                <ul class="info-list">
-                    <li class="info-item">
-                        <strong>Formatos Soportados</strong>
-                        <p>• Imágenes: PNG, JPG, JPEG, BMP, GIF, TIFF, WEBP<br>
-                           • Documentos: PDF, DOCX</p>
-                    </li>
-                    
-                    <li class="info-item">
-                        <strong>Sin Límites</strong>
-                        <p>Procesa archivos de cualquier tamaño. No hay restricciones de tamaño ni cantidad.</p>
-                    </li>
-                    
-                    <li class="info-item">
-                        <strong>Seguro</strong>
-                        <p>Todos los archivos se procesan en memoria y se eliminan automáticamente al terminar.</p>
-                    </li>
-                    
-                    <li class="info-item">
-                        <strong>Universal</strong>
-                        <p>Interfaz optimizada para PC, móviles y tablets. Totalmente responsive.</p>
-                    </li>
-                </ul>
+            <!-- Área de arrastrar/soltar -->
+            <div id="dropzone" class="upload-area">
+                📂 Arrastra y suelta tus archivos aquí<br>
+                o haz clic para seleccionar
+                <input type="file" name="files" id="fileInput" multiple style="display: none;" accept=".png,.jpg,.jpeg,.bmp,.gif,.tiff,.webp,.pdf">
+                <div class="file-list" id="fileList"></div>
             </div>
+
+            <div style="text-align: center;">
+                <button type="submit">🚀 Convertir ahora</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Código QR para móvil (si el servidor lo provee) -->
+    {% if qr_code %}
+    <div class="qr-section">
+        <h3>📱 Acceso rápido desde tu móvil</h3>
+        <p>Escanea este QR con tu celular (misma red WiFi)</p>
+        <div class="qr-img">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR de acceso" style="width: 160px; height: 160px;">
         </div>
+        <p><small>{{ server_url }}</small></p>
+    </div>
+    {% endif %}
 
-        <footer class="footer">
-            <p>XONI-CONVER v3.2 • Conversor Universal • by XONIDU</p>
-            <p style="margin-top: 5px; font-size: 0.8rem; opacity: 0.7;">
-                Procesa archivos de forma segura y eficiente
-            </p>
+    <!-- Instrucciones y créditos -->
+    <div class="card" id="como-usar">
+        <h2>📖 Guía rápida</h2>
+        <ul style="margin-left: 20px;">
+            <li><strong>Imágenes a PDF:</strong> sube una o más imágenes (PNG, JPG, BMP, etc.) y obtendrás un solo PDF.</li>
+            <li><strong>Unir PDFs:</strong> selecciona al menos 2 archivos PDF → se combinan en uno solo. <span class="badge">Corregido sin duplicación</span></li>
+            <li><strong>PDF a Word:</strong> extrae todo el texto de un PDF y guárdalo como documento .docx.</li>
+            <li>No hay límite de tamaño, todo el proceso es en memoria.</li>
+        </ul>
+        <p style="margin-top: 15px;">✨ <strong>Características extra:</strong> interfaz responsive, dos métodos de unión de PDFs (fallback automático), procesamiento seguro.</p>
+    </div>
+
+    <div class="card" id="servicios">
+        <h2>🌐 XONIDU · Código abierto libre</h2>
+        <p>XONICONVER es parte del ecosistema de herramientas gratuitas de <strong>XONIDU</strong>, desarrolladas por Darian Alberto Camacho Salas y colaboradores. Visita nuestros otros proyectos:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px;">
+            <a href="https://github.com/XONIDU/xoniconver" class="badge" style="text-decoration: none; background:#0f0;">GitHub Repo</a>
+            <a href="https://xonipage.xonidu.com" class="badge" style="text-decoration: none; background:#0f0;">Web XONIDU</a>
+            <a href="https://github.com/XONIDU" class="badge" style="text-decoration: none; background:#0f0;">Más proyectos</a>
+        </div>
+        <footer style="border: none; margin-top: 20px;">
+            <p>© 2026 XONIDU · Hecho en México 🇲🇽 · #SomosXONIDU</p>
+            <p>Contacto: xonidu@gmail.com</p>
         </footer>
     </div>
+</div>
 
-    <script>
-        const fileInput = document.getElementById('fileInput');
-        const fileUploadArea = document.getElementById('fileUploadArea');
-        const fileList = document.getElementById('fileList');
-        const fileCounter = document.getElementById('fileCounter');
-        const browseButton = document.getElementById('browseButton');
-        const converterForm = document.getElementById('converterForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const messagesContainer = document.getElementById('messagesContainer');
-        const convertButton = document.getElementById('convertButton');
-
-        let files = [];
-        const MAX_FILES = 50;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            checkForMessages();
+<script>
+    // Cambiar tipo de conversión visual
+    const btns = document.querySelectorAll('.opcion-btn');
+    const convInput = document.getElementById('conversionType');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            convInput.value = btn.getAttribute('data-conv');
+            // Actualizar aceptación de archivos según el tipo
+            const fileInput = document.getElementById('fileInput');
+            if (convInput.value === 'images_to_pdf') {
+                fileInput.accept = 'image/png,image/jpeg,image/jpg,image/bmp,image/gif,image/tiff,image/webp';
+            } else if (convInput.value === 'merge_pdfs' || convInput.value === 'pdf_to_docx') {
+                fileInput.accept = 'application/pdf';
+            }
+            // Limpiar lista de archivos al cambiar modo (opcional)
+            // document.getElementById('fileList').innerHTML = '';
         });
+    });
 
-        function setupEventListeners() {
-            fileInput.addEventListener('change', handleFileSelect);
-            browseButton.addEventListener('click', () => fileInput.click());
-            
-            fileUploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                fileUploadArea.classList.add('dragover');
-            });
-            
-            fileUploadArea.addEventListener('dragleave', () => {
-                fileUploadArea.classList.remove('dragover');
-            });
-            
-            fileUploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                fileUploadArea.classList.remove('dragover');
-                
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    handleFileSelect({ target: fileInput });
-                }
-            });
-            
-            converterForm.addEventListener('submit', handleFormSubmit);
+    // Drag & Drop y manejo de archivos
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileListDiv = document.getElementById('fileList');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+    });
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('drag-over');
+    });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files);
+        updateFileList(files);
+        // Asignar al input nativo
+        const dataTransfer = new DataTransfer();
+        files.forEach(f => dataTransfer.items.add(f));
+        fileInput.files = dataTransfer.files;
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        updateFileList(Array.from(e.target.files));
+    });
+
+    function updateFileList(files) {
+        if (files.length === 0) {
+            fileListDiv.innerHTML = '<div class="file-item">📁 No hay archivos seleccionados</div>';
+            return;
         }
+        let html = '';
+        files.forEach(file => {
+            const size = (file.size / 1024).toFixed(1);
+            html += `<div class="file-item"><span>📄 ${file.name}</span><span>${size} KB</span></div>`;
+        });
+        fileListDiv.innerHTML = html;
+    }
 
-        function handleFileSelect(event) {
-            const newFiles = Array.from(event.target.files);
-            
-            if (files.length + newFiles.length > MAX_FILES) {
-                showMessage(`Máximo ${MAX_FILES} archivos permitidos`, 'error');
-                return;
-            }
-            
-            newFiles.forEach(file => {
-                if (!isFileDuplicate(file)) {
-                    files.push(file);
-                }
-            });
-            
-            updateFileList();
-        }
-
-        function isFileDuplicate(newFile) {
-            return files.some(existingFile => 
-                existingFile.name === newFile.name && 
-                existingFile.size === newFile.size
-            );
-        }
-
-        function updateFileList() {
-            fileList.innerHTML = '';
-            
-            if (files.length === 0) {
-                fileList.innerHTML = `
-                    <div class="file-item" style="justify-content: center; color: var(--text-light);">
-                        No hay archivos seleccionados
-                    </div>
-                `;
-                fileCounter.textContent = '0 archivos | 0 KB';
-                convertButton.disabled = true;
-                return;
-            }
-            
-            files.forEach((file, index) => {
-                const fileElement = createFileElement(file, index);
-                fileList.appendChild(fileElement);
-            });
-            
-            const totalSize = formatFileSize(
-                files.reduce((sum, file) => sum + file.size, 0)
-            );
-            fileCounter.textContent = `${files.length} archivo(s) | ${totalSize}`;
-            convertButton.disabled = false;
-        }
-
-        function createFileElement(file, index) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerHTML = `
-                <div class="file-info">
-                    <div class="file-icon">📄</div>
-                    <div class="file-details">
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-size">${formatFileSize(file.size)}</div>
-                    </div>
-                </div>
-                <button type="button" class="file-remove" data-index="${index}" aria-label="Eliminar archivo">
-                    ✕
-                </button>
-            `;
-            
-            div.querySelector('.file-remove').addEventListener('click', (e) => {
-                e.stopPropagation();
-                removeFile(index);
-            });
-            
-            return div;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        function removeFile(index) {
-            files.splice(index, 1);
-            updateFileList();
-            
-            const dataTransfer = new DataTransfer();
-            files.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-
-        async function handleFormSubmit(e) {
+    // Verificar aceptación según el modo al enviar
+    const form = document.getElementById('conversionForm');
+    form.addEventListener('submit', (e) => {
+        const files = fileInput.files;
+        const conv = convInput.value;
+        if (files.length === 0) {
+            alert('⚠️ Selecciona al menos un archivo.');
             e.preventDefault();
-            
-            if (files.length === 0) {
-                showMessage('Selecciona al menos un archivo', 'error');
-                return;
-            }
-            
-            loadingOverlay.classList.add('active');
-            
-            const formData = new FormData(converterForm);
-            files.forEach(file => formData.append('files', file));
-            
-            try {
-                const response = await fetch('/', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    const contentType = response.headers.get('content-type');
-                    const contentDisposition = response.headers.get('content-disposition');
-                    
-                    if (contentType && contentDisposition) {
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        
-                        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-                        a.download = filenameMatch ? filenameMatch[1] : 'converted_file';
-                        
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(url);
-                        
-                        showMessage('Conversión completada ✓', 'success');
-                        
-                        files = [];
-                        updateFileList();
-                        fileInput.value = '';
-                    }
-                } else {
-                    const text = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/html');
-                    const error = doc.querySelector('.message')?.textContent || 'Error en la conversión';
-                    showMessage(error, 'error');
-                }
-            } catch (error) {
-                showMessage('Error de conexión con el servidor', 'error');
-                console.error('Error:', error);
-            } finally {
-                loadingOverlay.classList.remove('active');
-            }
+            return;
         }
-
-        function showMessage(text, type = 'error') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-text">${text}</div>
-                    <button class="message-close" onclick="this.parentElement.parentElement.remove()" aria-label="Cerrar mensaje">
-                        ✕
-                    </button>
-                </div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-            
-            setTimeout(() => {
-                if (messageDiv.parentElement) {
-                    messageDiv.remove();
-                }
-            }, 5000);
+        if (conv === 'merge_pdfs' && files.length < 2) {
+            alert('⚠️ Para unir PDFs necesitas al menos 2 archivos.');
+            e.preventDefault();
+            return;
         }
-
-        function checkForMessages() {
-            const errorElements = document.querySelectorAll('.error');
-            errorElements.forEach(el => {
-                if (el.textContent.trim()) {
-                    showMessage(el.textContent.trim(), 'error');
-                }
-            });
-        }
-
-        window.showMessage = showMessage;
-    </script>
+    });
+</script>
 </body>
 </html>
