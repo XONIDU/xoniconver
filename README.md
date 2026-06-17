@@ -74,13 +74,13 @@ echo 'xoninstall() { if [ -z "$1" ]; then echo "Uso: xoninstall <repo>"; echo "E
 Luego simplemente escribe:
 
 ```bash
-xoninstall xonicli
-cd xonicli
+xoninstall xoniconver
+cd xoniconver
 pip install -r requisitos.txt
 python start.py
 ```
 
-> **Nota:** Esta función te servirá para instalar cualquier otra herramienta futura de XONIDU (por ejemplo `xoninstall xonicli`).
+> **Nota:** Esta función te servirá para instalar cualquier otra herramienta futura de XONIDU (por ejemplo `xoninstall xoniconver`).
 ---
 
 #### 🪟 Windows
