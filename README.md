@@ -10,10 +10,11 @@
 
 ## 🎯 ¿Qué es XONICONVER?
 
-XONICONVER es una herramienta Python que proporciona un servicio web para convertir archivos de manera sencilla y rápida. Consta de dos componentes:
+XONICONVER es una herramienta Python que proporciona un servicio web para convertir archivos de manera sencilla y rápida. Consta de tres componentes:
 
 - **start.py** - Lanzador universal que verifica dependencias y ejecuta el programa principal
 - **xoniconver.py** - Programa principal con el servidor web y la lógica de conversión
+- **INICIAR_XONICONVER.bat** - Acceso directo para Windows (ejecuta start.py con permisos de administrador)
 
 Permite:
 - 🖼️ Convertir imágenes a PDF
@@ -63,6 +64,7 @@ pip3 install -r requisitos.txt --break-system-packages
 ```
 
 ---
+
 ### Opción 2 – Comando `xoninstall` (recomendado para futuras herramientas XONI)
 
 Agrega la siguiente función a tu `~/.bashrc` con un solo comando:
@@ -80,7 +82,8 @@ pip install -r requisitos.txt
 python start.py
 ```
 
-> **Nota:** Esta función te servirá para instalar cualquier otra herramienta futura de XONIDU (por ejemplo `xoninstall xoniconver`).
+> **Nota:** Esta función te servirá para instalar cualquier otra herramienta futura de XONIDU (por ejemplo `xoninstall xoniran`).
+
 ---
 
 #### 🪟 Windows
@@ -95,8 +98,14 @@ pip install -r requisitos.txt
 
 ### Iniciar el servidor
 
+**Opción 1 – Usando Python directamente:**
 ```bash
 python start.py
+```
+
+**Opción 2 – Usando el acceso directo en Windows:**
+```
+Doble clic en INICIAR_XONICONVER.bat
 ```
 
 El lanzador verificará las dependencias y automáticamente ejecutará xoniconver.py mostrando:
@@ -126,9 +135,64 @@ MENU PRINCIPAL:
 
 El lanzador crea automáticamente accesos directos para facilitar la ejecución:
 
-- **Windows**: INICIAR_XONICONVER.bat (doble clic)
-- **Linux**: INICIAR_XONICONVER.sh (ejecutar con ./INICIAR_XONICONVER.sh)
-- **MacOS**: INICIAR_XONICONVER.command (doble clic)
+- **Windows**: `INICIAR_XONICONVER.bat` (doble clic)
+- **Linux**: `INICIAR_XONICONVER.sh` (ejecutar con `./INICIAR_XONICONVER.sh`)
+- **MacOS**: `INICIAR_XONICONVER.command` (doble clic)
+
+### Contenido de `INICIAR_XONICONVER.bat`
+
+El archivo batch para Windows solicita permisos de administrador y ejecuta `start.py`:
+
+```batch
+@echo off
+title XONICONVER v3.2 - Conversor Universal de Archivos
+color 0A
+
+:: ============================================================
+:: SOLICITAR PERMISOS DE ADMINISTRADOR
+:: ============================================================
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Solicitando permisos de administrador...
+    echo.
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    del "%temp%\getadmin.vbs"
+    exit /B
+)
+
+:: ============================================================
+:: EJECUTAR start.py CON PERMISOS DE ADMINISTRADOR
+:: ============================================================
+cls
+echo ============================================================
+echo           XONICONVER v3.2 - Conversor Universal
+echo              (Modo Administrador)
+echo ============================================================
+echo.
+echo [OK] Permisos de administrador obtenidos
+echo.
+echo Iniciando XONICONVER...
+echo.
+echo [INFO] Conversor de archivos universal
+echo [INFO] Funcionalidades disponibles:
+echo   • Imagenes → PDF
+echo   • Unir PDFs (sin duplicacion)
+echo   • PDF → Word (.docx)
+echo.
+echo [INFO] Accede desde:
+echo   • Local: http://localhost:5050
+echo   • Red:   http://[TU-IP]:5050
+echo.
+echo Presiona Ctrl+C para detener el servidor
+echo ============================================================
+echo.
+
+python start.py
+
+pause
+```
 
 ### ✋ Detener el servidor
 
@@ -161,12 +225,13 @@ El lanzador crea automáticamente accesos directos para facilitar la ejecución:
 
 ```
 xoniconver/
-├── README.md          # Documentación
-├── requisitos.txt     # Dependencias Python
-├── start.py          # Lanzador universal
-├── xoniconver.py     # Programa principal (servidor web)
-└── templates/        # Plantillas HTML
-    └── index.html    # Interfaz de usuario responsive
+├── README.md                  # Documentación
+├── requisitos.txt             # Dependencias Python
+├── start.py                   # Lanzador universal
+├── xoniconver.py              # Programa principal (servidor web)
+├── INICIAR_XONICONVER.bat     # Acceso directo para Windows
+└── templates/                 # Plantillas HTML
+    └── index.html             # Interfaz de usuario responsive
 ```
 
 ---
@@ -209,6 +274,10 @@ pip list | grep -E "Flask|Pillow|PyPDF2|python-docx|qrcode"
 - Asegúrate de que xoniconver.py está en el mismo directorio que start.py
 - Verifica la estructura del proyecto
 
+### "Permisos denegados en Windows"
+- Ejecuta `INICIAR_XONICONVER.bat` como Administrador (clic derecho → Ejecutar como administrador)
+- O usa el acceso directo que ya solicita permisos automáticamente
+
 ---
 
 ## 🔒 Consideraciones de seguridad
@@ -238,4 +307,3 @@ pip list | grep -E "Flask|Pillow|PyPDF2|python-docx|qrcode"
 - **Creador**: Darian Alberto Camacho Salas
 - **#Somos XONIDU**
 
----
